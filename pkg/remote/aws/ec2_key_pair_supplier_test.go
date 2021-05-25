@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/cloudskiff/driftctl/pkg/remote/aws/repository"
+	"github.com/cloudskiff/driftctl/pkg/remote/cache"
 
 	remoteerror "github.com/cloudskiff/driftctl/pkg/remote/error"
 
@@ -76,7 +77,7 @@ func TestEC2KeyPairSupplier_Resources(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			supplierLibrary.AddSupplier(NewEC2KeyPairSupplier(provider))
+			supplierLibrary.AddSupplier(NewEC2KeyPairSupplier(provider, cache.New(0)))
 		}
 
 		t.Run(tt.test, func(t *testing.T) {

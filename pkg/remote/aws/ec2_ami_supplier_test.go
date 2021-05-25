@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/cloudskiff/driftctl/pkg/remote/cache"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/cloudskiff/driftctl/pkg/remote/aws/repository"
@@ -72,7 +73,7 @@ func TestEC2AmiSupplier_Resources(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			supplierLibrary.AddSupplier(NewEC2AmiSupplier(provider))
+			supplierLibrary.AddSupplier(NewEC2AmiSupplier(provider, cache.New(0)))
 		}
 
 		t.Run(tt.test, func(t *testing.T) {

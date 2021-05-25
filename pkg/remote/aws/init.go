@@ -5,6 +5,7 @@ import (
 	"github.com/cloudskiff/driftctl/pkg/output"
 	"github.com/cloudskiff/driftctl/pkg/remote/aws/client"
 	"github.com/cloudskiff/driftctl/pkg/remote/aws/repository"
+	"github.com/cloudskiff/driftctl/pkg/remote/cache"
 	"github.com/cloudskiff/driftctl/pkg/resource"
 	"github.com/cloudskiff/driftctl/pkg/resource/aws"
 	"github.com/cloudskiff/driftctl/pkg/terraform"
@@ -26,6 +27,8 @@ func Init(alerter *alerter.Alerter, providerLibrary *terraform.ProviderLibrary, 
 		return err
 	}
 
+	repositoryCache := cache.New(5 * 1024)
+
 	s3Repository := repository.NewS3Repository(client.NewAWSClientFactory(provider.session))
 
 	providerLibrary.AddProvider(terraform.AWS, provider)
@@ -36,15 +39,15 @@ func Init(alerter *alerter.Alerter, providerLibrary *terraform.ProviderLibrary, 
 	supplierLibrary.AddSupplier(NewS3BucketMetricSupplier(provider, s3Repository))
 	supplierLibrary.AddSupplier(NewS3BucketNotificationSupplier(provider, s3Repository))
 	supplierLibrary.AddSupplier(NewS3BucketPolicySupplier(provider, s3Repository))
-	supplierLibrary.AddSupplier(NewEC2EipSupplier(provider))
-	supplierLibrary.AddSupplier(NewEC2EipAssociationSupplier(provider))
-	supplierLibrary.AddSupplier(NewEC2EbsVolumeSupplier(provider))
-	supplierLibrary.AddSupplier(NewEC2EbsSnapshotSupplier(provider))
+	supplierLibrary.AddSupplier(NewEC2EipSupplier(provider, repositoryCache))
+	supplierLibrary.AddSupplier(NewEC2EipAssociationSupplier(provider, repositoryCache))
+	supplierLibrary.AddSupplier(NewEC2EbsVolumeSupplier(provider, repositoryCache))
+	supplierLibrary.AddSupplier(NewEC2EbsSnapshotSupplier(provider, repositoryCache))
 	supplierLibrary.AddSupplier(NewRoute53ZoneSupplier(provider))
 	supplierLibrary.AddSupplier(NewRoute53RecordSupplier(provider))
-	supplierLibrary.AddSupplier(NewEC2InstanceSupplier(provider))
-	supplierLibrary.AddSupplier(NewEC2AmiSupplier(provider))
-	supplierLibrary.AddSupplier(NewEC2KeyPairSupplier(provider))
+	supplierLibrary.AddSupplier(NewEC2InstanceSupplier(provider, repositoryCache))
+	supplierLibrary.AddSupplier(NewEC2AmiSupplier(provider, repositoryCache))
+	supplierLibrary.AddSupplier(NewEC2KeyPairSupplier(provider, repositoryCache))
 	supplierLibrary.AddSupplier(NewLambdaFunctionSupplier(provider))
 	supplierLibrary.AddSupplier(NewDBSubnetGroupSupplier(provider))
 	supplierLibrary.AddSupplier(NewDBInstanceSupplier(provider))

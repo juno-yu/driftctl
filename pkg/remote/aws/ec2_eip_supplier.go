@@ -2,6 +2,7 @@ package aws
 
 import (
 	"github.com/cloudskiff/driftctl/pkg/remote/aws/repository"
+	"github.com/cloudskiff/driftctl/pkg/remote/cache"
 	remoteerror "github.com/cloudskiff/driftctl/pkg/remote/error"
 
 	"github.com/cloudskiff/driftctl/pkg/remote/deserializer"
@@ -23,11 +24,11 @@ type EC2EipSupplier struct {
 	runner       *terraform.ParallelResourceReader
 }
 
-func NewEC2EipSupplier(provider *AWSTerraformProvider) *EC2EipSupplier {
+func NewEC2EipSupplier(provider *AWSTerraformProvider, c cache.Cache) *EC2EipSupplier {
 	return &EC2EipSupplier{
 		provider,
 		awsdeserializer.NewEC2EipDeserializer(),
-		repository.NewEC2Repository(provider.session),
+		repository.NewEC2Repository(provider.session, c),
 		terraform.NewParallelResourceReader(provider.Runner().SubRunner()),
 	}
 }
