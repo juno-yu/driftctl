@@ -27,7 +27,7 @@ func Init(alerter *alerter.Alerter, providerLibrary *terraform.ProviderLibrary, 
 		return err
 	}
 
-	repositoryCache := cache.New(5 * 1024)
+	repositoryCache := cache.New(100)
 
 	s3Repository := repository.NewS3Repository(client.NewAWSClientFactory(provider.session))
 
