@@ -29,7 +29,7 @@ func Init(alerter *alerter.Alerter, providerLibrary *terraform.ProviderLibrary, 
 
 	repositoryCache := cache.New(100)
 
-	s3Repository := repository.NewS3Repository(client.NewAWSClientFactory(provider.session))
+	s3Repository := repository.NewS3Repository(client.NewAWSClientFactory(provider.session), repositoryCache)
 
 	providerLibrary.AddProvider(terraform.AWS, provider)
 
